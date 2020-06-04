@@ -13,19 +13,19 @@ public abstract class AbstractCacheFactory implements CacheFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractCacheFactory.class);
 
-    private static final ConcurrentMap<CacheMetadata, Cache> concurrentMap = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<CacheMetadata, Cache> CONCURRENT_MAP = new ConcurrentHashMap<>();
 
     @Override
     public Cache getCache(Invoker<?> invoker, Invocation inv, CacheMetadata cacheMetadata) {
         Cache cache;
         try {
-            cache = concurrentMap.get(cacheMetadata);
+            cache = CONCURRENT_MAP.get(cacheMetadata);
             if (cache == null) {
                 cache = doGetCache(invoker, inv, cacheMetadata);
                 if (cache == null) {
                     cache = NullCache.INSTANCE;
                 }
-                concurrentMap.putIfAbsent(cacheMetadata, cache);
+                CONCURRENT_MAP.putIfAbsent(cacheMetadata, cache);
             }
         } catch (Exception e) {
             logger.warn("create Cache failure", e);

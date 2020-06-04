@@ -35,7 +35,6 @@ public class RedisCacheFactory extends AbstractCacheFactory {
                 }
             } else {
                 logger.warn("non spring application, @DubboConsumerCache don't work!");
-                return;
             }
         } catch (Exception e) {
             logger.warn("dubbo consumer cache failure", e);
