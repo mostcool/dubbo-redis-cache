@@ -18,13 +18,10 @@ public class DefaultCacheValueValidator implements CacheValueValidator {
 
     @Override
     public boolean isValid(URL url, Invocation invocation, CacheMetadata cacheMetadata, Object value) {
-        if (value != null) {
-            if (value instanceof Serializable) {
-                return true;
-            } else {
-                logger.warn("{}未实现java.io.Serializable，不能序列化", value);
-            }
+        if (value != null && value instanceof Serializable) {
+            return true;
         }
+        logger.warn("{} don't implement java.io.Serializable and cannot be serialized", value);
         return false;
     }
 }

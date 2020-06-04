@@ -1,11 +1,11 @@
 package com.github.dubbo.cache;
 
 import org.apache.dubbo.common.constants.CommonConstants;
+import org.apache.dubbo.common.utils.StringUtils;
 import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Invoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 
@@ -61,15 +61,15 @@ public class CacheMetadata {
 
     public String getCachePrefix() {
         StringBuilder sb = new StringBuilder();
-        if (!StringUtils.isEmpty(dubboConsumerCache.cacheName())) {
+        if (!StringUtils.isBlank(dubboConsumerCache.cacheName())) {
             sb.append(dubboConsumerCache.cacheName());
             sb.append(DELIMITER);
         }
-        if (!StringUtils.isEmpty(group)) {
+        if (!StringUtils.isBlank(group)) {
             sb.append(group);
             sb.append(DELIMITER);
         }
-        if (!StringUtils.isEmpty(version)) {
+        if (!StringUtils.isBlank(version)) {
             sb.append(version);
             sb.append(DELIMITER);
         }

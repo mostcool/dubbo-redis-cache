@@ -21,9 +21,9 @@ public class RedisCache extends AbstractCache {
 
     public RedisCache(RedisTemplate redisTemplate, CacheMetadata cacheMetadata) {
         this.redisTemplate = redisTemplate;
+        this.valueOperations = redisTemplate.opsForValue();
         this.expire = cacheMetadata.getDubboConsumerCache().expire();
         this.cachePrefix = cacheMetadata.getCachePrefix();
-        this.valueOperations = redisTemplate.opsForValue();
     }
 
     @Override
@@ -31,7 +31,7 @@ public class RedisCache extends AbstractCache {
         try {
             valueOperations.set(cachePrefix + key.toString(), value, expire, TimeUnit.SECONDS);
         } catch (Exception e) {
-            logger.warn("dubbo set cache failure", e);
+            logger.warn("dubbo put cache failure", e);
         }
     }
 

@@ -2,6 +2,7 @@ package com.github.dubbo.cache.el;
 
 import com.github.dubbo.cache.CacheMetadata;
 import com.github.dubbo.cache.KeyGenerator;
+import org.apache.dubbo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -10,7 +11,6 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.spel.SpelCompilerMode;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,7 +37,7 @@ public class SpelKeyGenerator implements KeyGenerator {
     @Override
     public Object key(CacheMetadata cacheMetadata, Object[] args) {
         try {
-            if (StringUtils.isEmpty(cacheMetadata.getDubboConsumerCache().key())) {
+            if (StringUtils.isBlank(cacheMetadata.getDubboConsumerCache().key())) {
                 return null;
             }
             ExpressionValueHolder expressionValueHolder = cache.get(cacheMetadata.getMethod());
