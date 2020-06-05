@@ -35,22 +35,24 @@ public class DubboConsumerCacheFilter implements Filter {
         if (cacheMetadata != null) {
             Cache cache = cacheFactory.getCache(invoker, invocation, cacheMetadata);
             if (cache != null && !cache.equals(NullCache.INSTANCE)) {
-                Object elEvaluatedKey = keyGenerator.key(cacheMetadata, invocation.getArguments());
-                if (cache.getCacheKeyValidator().isValid(invoker.getUrl(), invocation, cacheMetadata, elEvaluatedKey)) {
-                    Object value = cache.get(elEvaluatedKey);
+                Object key = keyGenerator.key(cacheMetadata, invocation.getArguments());
+                if (cache.getCacheKeyValidator().isValid(invoker.getUrl(), invocation, cacheMetadata, key)) {
+                    Object value = cache.get(key);
                     if (value != null) {
-                        logger.info(String.format("@DubboConsumerCache hit: service#method = %s, cacheKey = %s%s", cacheMetadata.getMethodFullName(), cacheMetadata.getCachePrefix(), elEvaluatedKey));
+                        logger.info(String.format("@DubboConsumerCache hit: service#method = %s, cacheKey = %s%s", cacheMetadata.getMethodFullName(), cacheMetadata.getKeyPrefix(), key));
                         return AsyncRpcResult.newDefaultAsyncResult(value, invocation);
                     }
                     Result result = invoker.invoke(invocation);
                     if (!result.hasException()) {
                         if (cache.getCacheValueValidator().isValid(invoker.getUrl(), invocation, cacheMetadata, result.getValue())) {
-                            cache.put(elEvaluatedKey, result.getValue());
+                            cache.put(key, result.getValue());
+                        } else {
+                            logger.warn(String.format("%s don't implement java.io.Serializable and cannot be serialized", result.getValue()));
                         }
                     }
                     return result;
                 } else {
-                    logger.warn(String.format("key[%s] is not support by %s", elEvaluatedKey, cache.getClass().getName()));
+                    logger.warn(String.format("key[%s] is not support by %s", key, cache.getClass().getName()));
                 }
             }
         }

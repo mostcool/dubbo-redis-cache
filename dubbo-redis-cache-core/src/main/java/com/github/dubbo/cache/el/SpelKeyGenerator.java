@@ -3,8 +3,6 @@ package com.github.dubbo.cache.el;
 import com.github.dubbo.cache.CacheMetadata;
 import com.github.dubbo.cache.KeyGenerator;
 import org.apache.dubbo.common.utils.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.expression.Expression;
@@ -21,48 +19,41 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class SpelKeyGenerator implements KeyGenerator {
 
-    private static final Logger logger = LoggerFactory.getLogger(SpelKeyGenerator.class);
-
     private final SpelExpressionParser spelExpressionParser;
-    private final ParameterNameDiscoverer paramDiscoverer;
+    private final ParameterNameDiscoverer parameterNameDiscoverer;
     private final ConcurrentMap<Method, ExpressionValueHolder> cache;
 
     public SpelKeyGenerator() {
         SpelParserConfiguration spelParserConfiguration = new SpelParserConfiguration(SpelCompilerMode.IMMEDIATE, null);
         spelExpressionParser = new SpelExpressionParser(spelParserConfiguration);
-        paramDiscoverer = new DefaultParameterNameDiscoverer();
+        parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
         cache = new ConcurrentHashMap<>();
     }
 
     @Override
     public Object key(CacheMetadata cacheMetadata, Object[] args) {
-        try {
-            if (StringUtils.isBlank(cacheMetadata.getDubboConsumerCache().key())) {
-                return null;
-            }
-            ExpressionValueHolder expressionValueHolder = cache.get(cacheMetadata.getMethod());
-            if (expressionValueHolder == null) {
-                Expression expression = spelExpressionParser.parseExpression(cacheMetadata.getDubboConsumerCache().key());
-                String[] parameterNames = paramDiscoverer.getParameterNames(cacheMetadata.getMethod());
-                expressionValueHolder = new ExpressionValueHolder(expression, parameterNames);
-                cache.putIfAbsent(cacheMetadata.getMethod(), expressionValueHolder);
-            }
-            CacheEvaluationContext context = new CacheEvaluationContext(cacheMetadata, cacheMetadata.getMethod(), args, expressionValueHolder.paramNames);
-            return expressionValueHolder.expression.getValue(context);
-        } catch (Exception e) {
-            logger.warn("spel parse failure", e);
+        if (StringUtils.isBlank(cacheMetadata.getKey())) {
+            return null;
         }
-        return null;
+        ExpressionValueHolder expressionValueHolder = cache.get(cacheMetadata.getMethod());
+        if (expressionValueHolder == null) {
+            Expression expression = spelExpressionParser.parseExpression(cacheMetadata.getKey());
+            String[] parameterNames = parameterNameDiscoverer.getParameterNames(cacheMetadata.getMethod());
+            expressionValueHolder = new ExpressionValueHolder(expression, parameterNames);
+            cache.putIfAbsent(cacheMetadata.getMethod(), expressionValueHolder);
+        }
+        CacheEvaluationContext context = new CacheEvaluationContext(cacheMetadata, cacheMetadata.getMethod(), args, expressionValueHolder.parameterNames);
+        return expressionValueHolder.expression.getValue(context);
     }
 
     private static class ExpressionValueHolder {
 
         private final Expression expression;
-        private final String[] paramNames;
+        private final String[] parameterNames;
 
-        public ExpressionValueHolder(Expression expression, String[] paramNames) {
+        public ExpressionValueHolder(Expression expression, String[] parameterNames) {
             this.expression = expression;
-            this.paramNames = paramNames;
+            this.parameterNames = parameterNames;
         }
     }
 }

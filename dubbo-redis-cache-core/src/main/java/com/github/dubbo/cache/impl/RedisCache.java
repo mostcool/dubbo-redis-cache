@@ -2,46 +2,29 @@ package com.github.dubbo.cache.impl;
 
 import com.github.dubbo.cache.AbstractCache;
 import com.github.dubbo.cache.CacheMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 
 import java.util.concurrent.TimeUnit;
 
 public class RedisCache extends AbstractCache {
 
-    private static final Logger logger = LoggerFactory.getLogger(RedisCache.class);
-
     private final RedisTemplate redisTemplate;
-    private final ValueOperations<String, Object> valueOperations;
-
     private final long expire;
-    private final String cachePrefix;
+    private final String keyPrefix;
 
     public RedisCache(RedisTemplate redisTemplate, CacheMetadata cacheMetadata) {
         this.redisTemplate = redisTemplate;
-        this.valueOperations = redisTemplate.opsForValue();
-        this.expire = cacheMetadata.getDubboConsumerCache().expire();
-        this.cachePrefix = cacheMetadata.getCachePrefix();
+        this.expire = cacheMetadata.getExpire();
+        this.keyPrefix = cacheMetadata.getKeyPrefix();
     }
 
     @Override
     public void put(Object key, Object value) {
-        try {
-            valueOperations.set(cachePrefix + key.toString(), value, expire, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            logger.warn("dubbo put cache failure", e);
-        }
+        redisTemplate.opsForValue().set(keyPrefix + key.toString(), value, expire, TimeUnit.SECONDS);
     }
 
     @Override
     public Object get(Object key) {
-        try {
-            return valueOperations.get(cachePrefix + key.toString());
-        } catch (Exception e) {
-            logger.warn("dubbo get cache failure", e);
-            return null;
-        }
+        return redisTemplate.opsForValue().get(keyPrefix + key.toString());
     }
 }
