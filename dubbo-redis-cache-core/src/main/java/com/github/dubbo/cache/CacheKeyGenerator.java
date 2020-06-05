@@ -3,7 +3,7 @@ package com.github.dubbo.cache;
 /**
  * key生成器
  */
-public interface KeyGenerator {
+public interface CacheKeyGenerator {
 
     Object key(CacheMetadata cacheMetadata, Object[] args);
 }

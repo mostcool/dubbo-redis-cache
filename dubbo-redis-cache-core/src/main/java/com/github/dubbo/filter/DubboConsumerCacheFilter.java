@@ -2,9 +2,9 @@ package com.github.dubbo.filter;
 
 import com.github.dubbo.cache.Cache;
 import com.github.dubbo.cache.CacheFactory;
+import com.github.dubbo.cache.CacheKeyGenerator;
 import com.github.dubbo.cache.CacheMetadata;
-import com.github.dubbo.cache.KeyGenerator;
-import com.github.dubbo.cache.el.SpelKeyGenerator;
+import com.github.dubbo.cache.el.CacheKeyBySpELGenerator;
 import com.github.dubbo.cache.impl.NullCache;
 import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.common.logger.Logger;
@@ -23,7 +23,7 @@ public class DubboConsumerCacheFilter implements Filter {
 
     private CacheFactory cacheFactory;
 
-    private final KeyGenerator keyGenerator = new SpelKeyGenerator();
+    private final CacheKeyGenerator keyGenerator = new CacheKeyBySpELGenerator();
 
     public void setCacheFactory(CacheFactory cacheFactory) {
         this.cacheFactory = cacheFactory;
