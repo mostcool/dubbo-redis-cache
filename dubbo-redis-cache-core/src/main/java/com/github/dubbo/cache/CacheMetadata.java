@@ -77,7 +77,7 @@ public class CacheMetadata {
     }
 
     public String getMethodFullName() {
-        return this.targetClass.getSimpleName() + '#' + method.getName();
+        return this.targetClass.getName() + '#' + method.getName();
     }
 
     public Method getMethod() {

@@ -39,7 +39,7 @@ public class DubboConsumerCacheFilter implements Filter {
                 if (cache.getCacheKeyValidator().isValid(invoker.getUrl(), invocation, cacheMetadata, elEvaluatedKey)) {
                     Object value = cache.get(elEvaluatedKey);
                     if (value != null) {
-                        logger.info(String.format("@DubboConsumerCache hit, service = %s, cachePrefix = %s, elEvaluatedKey = %s", cacheMetadata.getMethodFullName(), cacheMetadata.getCachePrefix(), elEvaluatedKey));
+                        logger.info(String.format("@DubboConsumerCache hit: service#method = %s, cacheKey = %s%s", cacheMetadata.getMethodFullName(), cacheMetadata.getCachePrefix(), elEvaluatedKey));
                         return AsyncRpcResult.newDefaultAsyncResult(value, invocation);
                     }
                     Result result = invoker.invoke(invocation);
