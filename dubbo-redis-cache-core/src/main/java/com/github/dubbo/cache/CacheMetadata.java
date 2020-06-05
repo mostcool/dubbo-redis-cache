@@ -160,7 +160,7 @@ public class CacheMetadata {
                 group.equals(that.group) &&
                 prefix.equals(that.prefix) &&
                 key.equals(that.key) &&
-                group.equals(that.group);
+                expire == that.expire;
     }
 
     @Override

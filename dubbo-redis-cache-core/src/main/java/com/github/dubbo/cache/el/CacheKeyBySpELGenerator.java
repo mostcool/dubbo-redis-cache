@@ -12,6 +12,8 @@ import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -55,6 +57,23 @@ public class CacheKeyBySpELGenerator implements CacheKeyGenerator {
         public ExpressionValueHolder(Expression expression, String[] parameterNames) {
             this.expression = expression;
             this.parameterNames = parameterNames;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            ExpressionValueHolder that = (ExpressionValueHolder) o;
+            return expression.equals(that.expression) && Arrays.equals(parameterNames, that.parameterNames);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(expression, parameterNames);
         }
     }
 }
