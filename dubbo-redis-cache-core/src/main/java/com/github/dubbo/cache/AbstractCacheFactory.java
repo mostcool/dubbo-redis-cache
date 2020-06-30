@@ -34,5 +34,5 @@ public abstract class AbstractCacheFactory implements CacheFactory {
         return cache;
     }
 
-    public abstract Cache doGetCache(Invoker<?> invoker, Invocation inv, CacheMetadata cacheMetadata);
+    protected abstract Cache doGetCache(Invoker<?> invoker, Invocation inv, CacheMetadata cacheMetadata);
 }
